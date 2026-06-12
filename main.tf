@@ -13,6 +13,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+locals {
+  name_prefix = "8-2"
+}
+
 
 # ── GitHub Actions OIDC provider ──────────────────────────────────────────────
 # Registered once per AWS account. Allows GitHub to present short-lived JWT tokens
@@ -73,4 +77,19 @@ resource "aws_iam_policy" "ci_runner" {
 resource "aws_iam_role_policy_attachment" "ci_runner" {
   role       = aws_iam_role.ci_runner.name
   policy_arn = aws_iam_policy.ci_runner.arn
+}
+
+resource "aws_secretsmanager_secret" "db_password" {
+  name                    = "${local.name_prefix}-db-password"
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "db_password" {
+  secret_id = aws_secretsmanager_secret.db_password.id
+
+  secret_string = "changeme-in-rotation"
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
