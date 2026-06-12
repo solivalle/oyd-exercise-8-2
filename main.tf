@@ -80,7 +80,7 @@ resource "aws_iam_role_policy_attachment" "ci_runner" {
 }
 
 resource "aws_secretsmanager_secret" "db_password" {
-  name                    = "${local.name_prefix}-db-password"
+  name                    = "${local.name_prefix}-db-password-2"
   recovery_window_in_days = 7
 }
 
